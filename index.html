@@ -4339,18 +4339,11 @@ function barangayIDSendRequest() {
     console.log("Submitting request:", request); // Debug log
 
   fetch('submit_request.php', {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(request)
+    method: 'POST',
+    body: "name=Juan&request_type=ID",  // ← Simple form data (NOT JSON)
 })
-.then(response => {
-  console.log("Raw response:", response); 
-  return response.text(); // First get as text to see what's really coming back
-})
-.then(text => {
-  console.log("Raw text response:", text);
+.then(response => response.text())
+.then(data => console.log("Server says:", data));
   try {
     const data = JSON.parse(text);
     console.log("Parsed JSON:", data);
