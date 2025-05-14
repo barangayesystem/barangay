@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay E-Service System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+      /* Custom styles */
+      #splashScreen {
+        display: flex;
+      }
+      #loginPage, #forgotAccountPage, #signUpPage, #adminDashboard {
+        display: none;
+      }
+      .page-container {
+        background: linear-gradient(to bottom, #6B0000, #D10000);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+      .form-container {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 28rem;
+        position: relative;
+        margin: 50px auto;
+      }
+      .logo-container {
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 100px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .logo-img {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+        display: block;
+        margin: auto;
+      }
+      .form-content {
+        margin-top: 20px;
+        width: 100%;
+      }
+      .name-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .gender-option {
+        position: relative;
+        flex: 1;
+      }
+      .gender-btn {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+      }
+      .gender-btn:hover {
+        background-color: #f3f4f6;
+      }
+      .gender-btn.selected {
+        border-color: #991b1b;
+        background-color: #fef2f2;
+      }
+      .gender-indicator {
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .gender-indicator::after {
+        content: '';
+        width: 0.6rem;
+        height: 0.6rem;
+        background-color: #991b1b;
+        border-radius: 50%;
+        opacity: 0;
+      }
+      .gender-btn.selected .gender-indicator::after {
+        opacity: 1;
+      }
+      .gender-input {
+        position: absolute;
+        opacity: 0;
+      }
+      .sidebar {
+        background: linear-gradient(to bottom, #6B0000, #D10000);
+        color: white;
+        width: 250px;
+        min-height: 100vh;
+      }
+      .sidebar-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .sidebar-item.active {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .folder-icon {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+      }
+      .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+      .sidebar-item {
+        transition: background-color 0.2s ease;
+      }
+      .sidebar-item.active {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .sidebar-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .form-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .form-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .content-section {
+        display: none;
+      }
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        background-color: #f3f4f6;
+      }
+      .barangay-id-container {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 1rem;
+      }
+      .barangay-id-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #6B0000;
+      }
+      .barangay-id-info {
+        margin-bottom: 0.5rem;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+      }
+      .admin-dashboard-container {
+        display: flex;
+        min-height: 100vh;
+      }
+      .admin-content {
+        flex: 1;
+        padding: 2rem;
+        background-color: #f3f4f6;
+        overflow-y: auto;
+      }
+      .content-section {
+        display: none;
+      }
+      .content-section.active {
+        display: block;
+      }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Splash Screen -->
+  <div id="splashScreen" class="fixed inset-0 bg-gradient-to-b from-[#6B0000] to-[#D10000] flex cursor-pointer select-none z-50">
+    <div class="flex flex-1 items-center justify-center">
+      <img src="https://i.imgur.com/MYIBL05.png" alt="Barangay related design" class="w-full h-full object-contain max-w-none max-h-full" style="max-width:none; max-height:none;">
+    </div>
+    <div class="flex flex-1 flex-col items-center justify-center text-center px-0">
+      <h1 class="text-white font-bold text-7xl sm:text-8xl leading-tight mb-8 max-w-6xl px-2">
+        Barangay<br>E-Services
+      </h1>
+      <p class="text-white text-xl sm:text-2xl font-semibold select-none px-0">
+        Tap anywhere to continue
+      </p>
+    </div>
+  </div>
+  
+  <!-- Login Page -->
+  <div id="loginPage" class="page-container hidden">
+    <div class="form-container">
+      <div class="logo-container">
+        <img src="image.png" alt="MGA BARANGAY PILIPINAS 1991" class="logo-img">
+      </div>
+      <div class="form-content">
+        <form action="connect.php" method="post">
+        <h1 class="text-2xl font-bold mb-6 text-center text-red-800">Log Into Barangay</h1>
+        <div class="mb-4">
+            <input id="loginEmail" type="text" placeholder="Email" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" name="email">
+            <div id="loginEmailError" class="error-message hidden text-center">Please enter a valid email</div>
+        </div>
+        <div class="mb-6">
+            <input id="loginPassword" type="password" placeholder="Password" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" name="password">
+            <div id="loginPasswordError" class="error-message hidden text-center">Please enter your password</div>
+            <div id="loginError" class="error-message hidden text-center">Invalid email or password</div>
+        </div>
+        <button onclick="attemptLogin()" class="w-full py-2 bg-red-800 text-white font-medium rounded-md hover:bg-red-900 mb-4">Log In</button>
+        <div class="form-links">
+            <a href="#" onclick="showPage('forgotAccountPage')" class="text-sm text-blue-600 hover:underline">Forgot account?</a>
+            <span class="text-gray-400">|</span>
+            <a href="#" onclick="showPage('signUpPage')" class="text-sm text-blue-600 hover:underline">Sign up for Barangay</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Account Page -->
+  <div id="forgotAccountPage" class="page-container hidden">
+    <div class="form-container">
+      <div class="logo-container">
+        <img src="image.png" alt="MGA BARANGAY PILIPINAS 1991" class="logo-img">
+      </div>
+      <div class="form-content">
+        <h1 class="text-2xl font-bold mb-6 text-center text-red-800">Find your account</h1>
+        <p class="text-gray-600 mb-6 text-center">Please enter your email to search for your account.</p>
+        <div class="mb-4">
+            <input id="forgotEmail" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <div id="forgotEmailError" class="error-message hidden text-center">Please enter a valid email</div>
+        </div>
+        <div class="form-actions mt-6">
+            <button onclick="showPage('loginPage')" class="px-4 py-2 text-gray-600 font-medium rounded-md hover:bg-gray-100">Cancel</button>
+            <button onclick="attemptForgotPassword()" class="px-4 py-2 bg-red-800 text-white font-medium rounded-md hover:bg-red-900">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign Up Page -->
+  <div id="signUpPage" class="page-container hidden">
+    <div class="form-container">
+      <div class="logo-container">
+        <img src="image.png" alt="MGA BARANGAY PILIPINAS 1991" class="logo-img">
+      </div>
+      <div class="form-content">
+        <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Create a new account</h1>
+        <div class="name-container mb-4">
+          <div>
+            <input id="signupFirstName" type="text" placeholder="First Name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <div id="firstNameError" class="error-message hidden text-center">Please enter your first name</div>
+          </div>
+          <div>
+            <input id="signupLastName" type="text" placeholder="Last Name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <div id="lastNameError" class="error-message hidden text-center">Please enter your last name</div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="text-sm font-medium mb-2 text-gray-700 text-center">Birthday</h3>
+          <div class="flex gap-2 justify-center">
+            <select id="birthMonth" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-700">
+              <option value="" disabled selected>Month</option>
+              <option value="01">Jan</option>
+              <option value="02">Feb</option>
+              <option value="03">Mar</option>
+              <option value="04">Apr</option>
+              <option value="05">May</option>
+              <option value="06">Jun</option>
+              <option value="07">Jul</option>
+              <option value="08">Aug</option>
+              <option value="09">Sep</option>
+              <option value="10">Oct</option>
+              <option value="11">Nov</option>
+              <option value="12">Dec</option>
+            </select>
+            <select id="birthDay" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-700">
+              <option value="" disabled selected>Day</option>
+              <script>
+                for(let i = 1; i <= 31; i++) {
+                  document.write(`<option value="${i < 10 ? '0'+i : i}">${i}</option>`);
+                }
+              </script>
+            </select>
+            <select id="birthYear" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-700">
+              <option value="" disabled selected>Year</option>
+              <script>
+                const currentYear = new Date().getFullYear();
+                for(let i = currentYear; i >= currentYear - 100; i--) {
+                  document.write(`<option value="${i}">${i}</option>`);
+                }
+              </script>
+            </select>
+          </div>
+          <div id="birthdayError" class="error-message hidden text-center">Please select your birthday</div>
+        </div>
+        <div class="mb-4">
+          <h3 class="text-sm font-medium mb-2 text-gray-700 text-center">Gender</h3>
+          <div class="flex gap-2 justify-center">
+            <label class="gender-option">
+              <input type="radio" name="gender" class="gender-input" value="female">
+              <div class="gender-btn">
+                <span class="gender-indicator"></span>
+                <span class="text-gray-700">Female</span>
+              </div>
+            </label>
+            <label class="gender-option">
+              <input type="radio" name="gender" class="gender-input" value="male">
+              <div class="gender-btn">
+                <span class="gender-indicator"></span>
+                <span class="text-gray-700">Male</span>
+              </div>
+            </label>
+            <label class="gender-option">
+              <input type="radio" name="gender" class="gender-input" value="custom">
+              <div class="gender-btn">
+                <span class="gender-indicator"></span>
+                <span class="text-gray-700">Custom</span>
+              </div>
+            </label>
+          </div>
+          <div id="genderError" class="error-message hidden text-center">Please select your gender</div>
+        </div>
+        <div class="mb-4">
+          <input id="signupEmail" type="email" placeholder="Email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-700">
+          <div id="emailError" class="error-message hidden text-center">Please enter a valid email</div>
+          <div id="emailExistsError" class="error-message hidden text-center">Email already registered</div>
+        </div>
+        <div class="mb-6">
+          <input id="signupPassword" type="password" placeholder="New password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-700">
+          <div id="passwordError" class="error-message hidden text-center">Password must be at least 6 characters</div>
+        </div>
+        <p class="text-xs text-gray-500 mb-4 text-center">
+          People who use our service may have uploaded your contact information to Barangay. <a href="#" class="text-blue-600 hover:underline">Learn more</a>.<br>
+          By clicking Sign Up, you agree to our <a href="#" class="text-blue-600 hover:underline">Terms</a>, <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a> and <a href="#" class="text-blue-600 hover:underline">Cookies Policy</a>. You may receive SMS notifications from us and can opt out any time.
+        </p>
+        <button onclick="attemptSignup()" class="w-full py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 mb-4">Sign Up</button>
+        <div class="text-center">
+          <a href="#" onclick="showPage('loginPage')" class="text-sm text-blue-600 hover:underline">Already have an account?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <div class="sidebar w-64 min-h-screen p-4 flex flex-col">
+          <!-- Administrator Profile -->
+          <div class="flex items-center mb-8">
+              <div class="relative w-12 h-12 mr-3">
+                  <div class="w-full h-full rounded-full bg-gray-300 overflow-hidden border-2 border-white">
+                      <div class="w-full h-full flex items-center justify-center text-gray-600">
+                          <i class="fas fa-user text-xl"></i>
+                      </div>
+                  </div>
+                  <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
+              <div>
+                  <h1 class="text-xl font-bold">Administrator</h1>
+                  <p class="text-xs text-gray-300">Admin</p>
+              </div>
+          </div>
+
+          <!-- Residents Record with Dropdown -->
+          <div class="mb-4">
+              <div class="relative">
+                  <div class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center justify-between" onclick="toggleDropdown('residentsDropdown')">
+                      <div class="flex items-center">
+                          <i class="fas fa-users mr-2"></i>
+                          <span>Residents Record</span>
+                      </div>
+                      <i class="fas fa-chevron-down text-xs transition-transform duration-200" id="residentsDropdownIcon"></i>
+                  </div>
+                  <ul class="pl-6 mt-1 hidden" id="residentsDropdown">
+                      <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center" onclick="showBarangayId()">
+                          <i class="fas fa-id-card mr-2 text-sm"></i>
+                          <span class="text-sm">Barangay ID</span>
+                      </li>
+                      <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center">
+                          <i class="fas fa-file-contract mr-2 text-sm"></i>
+                          <span class="text-sm">Clearance</span>
+                      </li>
+                      <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center">
+                        <i class="fas fa-hand-holding-heart mr-2 text-sm"></i>
+                        <span class="text-sm">Indigency</span>
+                      </li>  
+                      <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center">
+                          <i class="fas fa-file-signature mr-2 text-sm"></i>
+                          <span class="text-sm">Permit</span>
+                      </li>
+                      <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center">
+                          <i class="fas fa-certificate mr-2 text-sm"></i>
+                          <span class="text-sm">Certificates</span>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+          
+          <!-- Requested Document -->
+          <div class="mb-4">
+              <div id="requestedDocBtn" class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center" onclick="showRequestsContent()">
+                  <i class="fas fa-file-alt mr-2"></i>
+                  <span>Requested Document</span>
+              </div>
+            </div>
+
+            <!-- History -->
+<div class="mb-4">
+    <div class="relative">
+        <div class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center justify-between" onclick="toggleDropdown('historyDropdown')">
+            <div class="flex items-center">
+                <i class="fas fa-history mr-2"></i>
+                <span>History</span>
+            </div>
+            <i class="fas fa-chevron-down text-xs transition-transform duration-200" id="historyDropdownIcon"></i>
+        </div>
+        <ul class="pl-6 mt-1 hidden" id="historyDropdown">
+            <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center hover:bg-green-50" 
+                onclick="showHistorySection('approvedHistory')">
+                <i class="fas fa-check-circle mr-2 text-sm text-green-500"></i>
+                <span class="text-sm">Approved</span>
+            </li>
+            <li class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center hover:bg-red-50"
+                onclick="showHistorySection('declinedHistory')">
+                <i class="fas fa-times-circle mr-2 text-sm text-red-500"></i>
+                <span class="text-sm">Declined</span>
+            </li>
+        </ul>
+    </div>
+</div>
+          
+          <!-- Back Button -->
+          <div class="mt-auto">
+              <div class="sidebar-item rounded-md p-2 mb-1 cursor-pointer flex items-center hover:bg-red-900" onclick="logout()">
+                  <i class="fas fa-arrow-left mr-2"></i>
+                  <span>Logout</span>
+              </div>
+          </div>
+      </div>
+      
+      <!-- Main Content Area -->
+      <div class="admin-content">
+          <!-- Default Content (Residents Record) -->
+          <div id="defaultContent" class="content-section active">
+              <div class="flex justify-between items-center mb-8">
+                  <h1 class="text-2xl font-bold text-gray-800">Residents Record</h1>
+                  <div class="flex items-center">
+                      <div class="relative mr-4">
+                          <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                      </div>
+                      <button class="bg-red-800 text-white px-4 py-2 rounded-md hover:bg-red-900">
+                          <i class="fas fa-plus mr-2"></i>Add Resident
+                      </button>
+                  </div>
+              </div>
+        
+              <!-- Folder Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">    
+                  <!-- Barangay ID Folder -->
+                  <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow" onclick="showBarangayId()">
+                      <img src="folder.avif" alt="Folder" class="folder-icon mx-auto mb-4">
+                      <h3 class="font-semibold text-lg mb-1">Barangay ID</h3>
+                      <p class="text-gray-600 text-sm">Issue and manage resident identification cards</p>
+                  </div>
+                  
+                  <!-- Barangay Clearance Folder -->
+                  <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+                      <img src="folder.avif" alt="Folder" class="folder-icon mx-auto mb-4">
+                      <h3 class="font-semibold text-lg mb-1">Barangay Clearance</h3>
+                      <p class="text-gray-600 text-sm">Process and track clearance applications</p>
+                  </div>
+                  
+                  <!-- Barangay Indigency Folder -->
+                  <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+                      <img src="folder.avif" alt="Folder" class="folder-icon mx-auto mb-4">
+                      <h3 class="font-semibold text-lg mb-1">Barangay Indigency</h3>
+                      <p class="text-gray-600 text-sm">Manage certificates for indigent residents</p>
+                  </div>
+                  
+                  <!-- Certificates Folder -->
+                  <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+                      <img src="folder.avif" alt="Folder" class="folder-icon mx-auto mb-4">
+                      <h3 class="font-semibold text-lg mb-1">Certificates</h3>
+                      <p class="text-gray-600 text-sm">Handle various barangay-issued certificates</p>
+                  </div>
+                  
+                  <!-- Permits Folder -->
+                  <div class="bg-white p-6 rounded-lg shadow-md text-center cursor-pointer hover:shadow-lg transition-shadow">
+                      <img src="folder.avif" alt="Folder" class="folder-icon mx-auto mb-4">
+                      <h3 class="font-semibold text-lg mb-1">Permits</h3>
+                      <p class="text-gray-600 text-sm">Process business and special event permits</p>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Document Requests Content -->
+          <div id="requestsContent" class="content-section">
+              <div class="flex justify-between items-center mb-8">
+                  <h1 class="text-2xl font-bold text-gray-800">Document Requests</h1>
+                  <div class="flex items-center">
+                      <div class="relative mr-4">
+                          <input type="text" placeholder="Search requests..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                      </div>
+                      <button class="bg-red-800 text-white px-4 py-2 rounded-md hover:bg-red-900">
+                          <i class="fas fa-filter mr-2"></i>Filter
+                      </button>
+                  </div>
+              </div>
+              
+              <!-- Requests Table -->
+              <div class="bg-white rounded-lg shadow overflow-hidden">
+                  <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-gray-50">
+                          <tr>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request ID</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resident</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-200" id="requestTableBody">
+                          <!-- Sample Request Row -->
+                          <tr>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BRSY_2023_001</td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">SANTIAGO, COLEEN</td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Barangay ID</td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-11-15</td>
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                      Pending
+                                  </span>
+                              </td>
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                  <button class="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                  <button class="text-red-600 hover:text-red-900">Decline</button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+
+          <!-- Approved History Section -->
+<div id="approvedHistory" class="content-section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Approved Residents</h1>
+        <div class="flex items-center">
+            <div class="relative mr-4">
+                <input type="text" placeholder="Search approved..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" id="approvedSearch">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="approvedResidentsContainer">
+        <!-- Approved residents will be loaded here -->
+  </div>
+</div>
+
+<!-- Declined History Section -->
+<div id="declinedHistory" class="content-section">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Declined Residents</h1>
+    <div class="flex items-center">
+      <div class="relative mr-4">
+        <input type="text" placeholder="Search declined..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" id="declinedSearch">
+        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="declinedResidentsContainer">
+    <!-- Declined residents will be loaded here -->
+  </div>
+</div>
+
+<!-- Declined History Section -->
+<div id="declinedHistory" class="content-section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Declined Residents</h1>
+        <div class="flex items-center">
+            <div class="relative mr-4">
+                <input type="text" placeholder="Search declined..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Declined Resident Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+            <div class="flex justify-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b-2 border-red-500 pb-2 px-4">Barangay ID</h2>
+            </div>
+            
+            <div class="border border-gray-300 rounded-lg p-4 mb-6">
+                <div class="font-medium text-lg">Maria Santos</div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+                    <span>09998887766</span>
+                </div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+                    <span>456 - Sunshine Village, B.C.</span>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200 text-red-500 flex items-center">
+                    <i class="fas fa-times-circle mr-2"></i>
+                    <span>Declined on April 28, 2023 - Missing documents</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Barangay ID Content -->
+<div id="barangayIdContent" class="content-section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Barangay ID</h1>
+        <div class="flex items-center">
+            <div class="relative mr-4">
+                <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Container for ID Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Juan Dela Cruz's ID Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+            <div class="flex justify-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 px-4">Barangay ID</h2>
+            </div>
+            
+            <div class="border border-gray-300 rounded-lg p-4 mb-6">
+                <!-- Resident Information -->
+                <div class="font-medium text-lg">Juan Dela Cruz</div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+                    <span>09123456789</span>
+                </div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+                    <span>123 - Street, A.C.</span>
+                </div>
+                
+                <!-- Guardian Information -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="text-sm font-medium text-gray-500">Guardian</div>
+                    <div class="text-gray-700 mt-2 flex items-center">
+                        <i class="fas fa-user-shield mr-2 text-blue-500"></i>
+                        <span>Juanita Dela Cruz</span>
+                    </div>
+                    <div class="text-gray-700 mt-2 flex items-center">
+                        <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+                        <span>09112233445</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center space-x-4 pt-4 border-t">
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none flex items-center">
+                    <i class="fas fa-print mr-2"></i>
+                    Print
+                </button>
+                <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    Done
+                </button>
+            </div>
+        </div>
+
+        <!-- Maria Santos's ID Card -->
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-300">
+            <div class="flex justify-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 px-4">Barangay ID</h2>
+            </div>
+            
+            <div class="border border-gray-300 rounded-lg p-4 mb-6">
+                <!-- Resident Information -->
+                <div class="font-medium text-lg">Maria Santos</div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+                    <span>09998887766</span>
+                </div>
+                <div class="text-gray-700 mt-2 flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+                    <span>456 - Sunshine Village, B.C.</span>
+                </div>
+                
+                <!-- Guardian Information -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="text-sm font-medium text-gray-500">Guardian</div>
+                    <div class="text-gray-700 mt-2 flex items-center">
+                        <i class="fas fa-user-shield mr-2 text-blue-500"></i>
+                        <span>Roberto Santos</span>
+                    </div>
+                    <div class="text-gray-700 mt-2 flex items-center">
+                        <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+                        <span>09997778888</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center space-x-4 pt-4 border-t">
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none flex items-center">
+                    <i class="fas fa-print mr-2"></i>
+                    Print
+                </button>
+                <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Use event delegation for dynamically added buttons
+    document.addEventListener('click', function(e) {
+        // Check if the clicked element or its parent is the Done button
+        const doneButton = e.target.closest('.bg-green-500');
+        
+        if (doneButton) {
+            console.log("Done button clicked"); // Debugging
+            
+            const idCard = doneButton.closest('.bg-white');
+            if (!idCard) {
+                console.error("Could not find ID card element");
+                return;
+            }
+            
+            console.log("Found ID card:", idCard); // Debugging
+            
+            // Create history card
+            const historyCard = idCard.cloneNode(true);
+            
+            // Remove buttons
+            const buttonContainer = historyCard.querySelector('.flex.justify-center.space-x-4');
+            if (buttonContainer) {
+                buttonContainer.remove();
+            } else {
+                console.warn("Could not find button container");
+            }
+            
+            // Add timestamp
+            const timestamp = document.createElement('div');
+            timestamp.className = 'text-xs text-gray-500 mt-2 text-right';
+            timestamp.textContent = 'Approved on: ' + new Date().toLocaleString();
+            historyCard.appendChild(timestamp);
+            
+            // Style history card
+            historyCard.classList.add('opacity-75', 'border-green-300');
+            
+            // Find or create history section
+            let historySection = document.getElementById('history-approved');
+            if (!historySection) {
+                console.log("Creating new history section"); // Debugging
+                historySection = document.createElement('div');
+                historySection.id = 'history-approved';
+                historySection.className = 'mt-12';
+                
+                const historyTitle = document.createElement('h3');
+                historyTitle.className = 'text-xl font-bold text-gray-800 mb-4';
+                historyTitle.textContent = 'Approved History';
+                historySection.appendChild(historyTitle);
+                
+                const historyGrid = document.createElement('div');
+                historyGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+                historySection.appendChild(historyGrid);
+                
+                // Insert after the main grid
+                const mainGrid = document.querySelector('.grid');
+                if (mainGrid) {
+                    mainGrid.after(historySection);
+                } else {
+                    console.error("Could not find main grid");
+                    return;
+                }
+            }
+            
+            // Add to history
+            const historyGrid = historySection.querySelector('.grid');
+            if (historyGrid) {
+                historyGrid.appendChild(historyCard);
+                console.log("Added to history"); // Debugging
+            } else {
+                console.error("Could not find history grid");
+            }
+            
+            // Remove original
+            idCard.remove();
+            
+            // Optional: Show feedback
+            alert('ID card has been moved to approved history.');
+        }
+    });
+});
+    
+    // Add event listener for splash screen click
+    document.getElementById('splashScreen').addEventListener('click', function() {
+      showPage('loginPage');
+    });
+    
+    function showHistorySection(sectionId) {
+    // Hide all content sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+        section.classList.remove('active');
+    });
+    
+    // Show the selected section
+    const section = document.getElementById(sectionId);
+    section.classList.remove('hidden');
+    section.classList.add('active');
+    
+    // Close the dropdown
+    toggleDropdown('historyDropdown');
+    
+    // Update active state in sidebar
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector('[onclick="toggleDropdown(\'historyDropdown\')"]').classList.add('active');
+}
+    // Toggle dropdown function
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const icon = document.getElementById(dropdownId + 'Icon');
+        
+        dropdown.classList.toggle('hidden');
+        icon.classList.toggle('transform');
+        icon.classList.toggle('rotate-180');
+    }
+
+    // Highlight active sidebar item
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.currentTarget.hasAttribute('onclick') && 
+                (e.currentTarget.getAttribute('onclick').includes('toggleDropdown') || 
+                 e.currentTarget.getAttribute('onclick').includes('logout'))) {
+                return;
+            }
+            
+            document.querySelectorAll('.sidebar-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // Initialize user accounts in localStorage if not exists
+    if (!localStorage.getItem('barangayUsers')) {
+        localStorage.setItem('barangayUsers', JSON.stringify([]));
+    }
+
+    // Show specific page and hide others
+    function showPage(pageId) {
+        const pages = ['splashScreen', 'loginPage', 'forgotAccountPage', 'signUpPage', 'adminDashboard'];
+        pages.forEach(id => {
+            const page = document.getElementById(id);
+            if (page) {
+                if (id === pageId) {
+                    page.classList.remove('hidden');
+                    if (id === 'splashScreen') {
+                        page.style.display = 'flex';
+                    } else if (id === 'adminDashboard') {
+                        page.style.display = 'block';
+                    } else {
+                        page.style.display = 'block';
+                    }
+                } else {
+                    page.classList.add('hidden');
+                    page.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Show Barangay ID content
+    function showBarangayId() {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById('barangayIdContent').classList.add('active');
+        
+        // Update the active state in the sidebar
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector('#residentsDropdown li:first-child').classList.add('active');
+    }
+
+    function showDefaultContent() {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById('defaultContent').classList.add('active');
+    }
+    
+    function showRequestsContent() {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById('requestsContent').classList.add('active');
+        
+        // Update the active state in the sidebar
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.getElementById('requestedDocBtn').classList.add('active');
+    }
+
+    function showPage(pageId) {
+        const pages = ['splashScreen', 'loginPage', 'forgotAccountPage', 'signUpPage', 'adminDashboard'];
+        pages.forEach(id => {
+            const page = document.getElementById(id);
+            if (page) {
+                if (id === pageId) {
+                    page.classList.remove('hidden');
+                    if (id === 'splashScreen') {
+                        page.style.display = 'flex';
+                    } else if (id === 'adminDashboard') {
+                        page.style.display = 'block';
+                        // Show default content when dashboard loads
+                        showDefaultContent();
+                    } else {
+                        page.style.display = 'block';
+                    }
+                } else {
+                    page.classList.add('hidden');
+                    page.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Gender selection functionality
+    document.querySelectorAll('.gender-input').forEach(input => {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.gender-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            if (this.checked) {
+                this.nextElementSibling.classList.add('selected');
+            }
+        });
+    });
+
+    // Validate email format
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    // Hide all error messages
+    function hideAllErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.add('hidden');
+        });
+    }
+
+        // Login function
+        function attemptLogin() {
+        hideAllErrors();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        let isValid = true;
+
+        if (!email) {
+            document.getElementById('loginEmailError').classList.remove('hidden');
+            isValid = false;
+        } else if (!validateEmail(email)) {
+            document.getElementById('loginEmailError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        if (!password) {
+            document.getElementById('loginPasswordError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        const users = JSON.parse(localStorage.getItem('barangayUsers'));
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            // Store current user in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            showPage('adminDashboard');
+        } else {
+            document.getElementById('loginError').classList.remove('hidden');
+        }
+    }
+
+    // Signup function
+    function attemptSignup() {
+        hideAllErrors();
+        
+        const firstName = document.getElementById('signupFirstName').value.trim();
+        const lastName = document.getElementById('signupLastName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value.trim();
+        const birthMonth = document.getElementById('birthMonth').value;
+        const birthDay = document.getElementById('birthDay').value;
+        const birthYear = document.getElementById('birthYear').value;
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
+        
+        let isValid = true;
+
+        // Validate first name
+        if (!firstName) {
+            document.getElementById('firstNameError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Validate last name
+        if (!lastName) {
+            document.getElementById('lastNameError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Validate email
+        if (!email) {
+            document.getElementById('emailError').classList.remove('hidden');
+            isValid = false;
+        } else if (!validateEmail(email)) {
+            document.getElementById('emailError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Validate password
+        if (!password || password.length < 6) {
+            document.getElementById('passwordError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Validate birthday
+        if (!birthMonth || !birthDay || !birthYear) {
+            document.getElementById('birthdayError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        // Validate gender
+        if (!gender) {
+            document.getElementById('genderError').classList.remove('hidden');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Check if email already exists
+        const users = JSON.parse(localStorage.getItem('barangayUsers'));
+        if (users.some(u => u.email === email)) {
+            document.getElementById('emailExistsError').classList.remove('hidden');
+            return;
+        }
+
+        // Create new user
+        const newUser = {
+            firstName,
+            lastName,
+            email,
+            password,
+            birthDate: `${birthYear}-${birthMonth}-${birthDay}`,
+            gender,
+            createdAt: new Date().toISOString()
+        };
+
+        // Save user
+        users.push(newUser);
+        localStorage.setItem('barangayUsers', JSON.stringify(users));
+        
+        // Clear form
+        document.getElementById('signupFirstName').value = '';
+        document.getElementById('signupLastName').value = '';
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupPassword').value = '';
+        document.getElementById('birthMonth').value = '';
+        document.getElementById('birthDay').value = '';
+        document.getElementById('birthYear').value = '';
+        document.querySelectorAll('.gender-input').forEach(input => input.checked = false);
+        document.querySelectorAll('.gender-btn').forEach(btn => btn.classList.remove('selected'));
+        
+        // Show success message and redirect to login
+        alert('Account created successfully! Please log in.');
+        showPage('loginPage');
+        
+        // Pre-fill the login email field
+        document.getElementById('loginEmail').value = email;
+    }
+    
+    // Forgot password function
+    function attemptForgotPassword() {
+        hideAllErrors();
+        
+        const email = document.getElementById('forgotEmail').value.trim();
+        
+        if (!email) {
+            document.getElementById('forgotEmailError').classList.remove('hidden');
+            return;
+        } else if (!validateEmail(email)) {
+            document.getElementById('forgotEmailError').classList.remove('hidden');
+            return;
+        }
+
+        const users = JSON.parse(localStorage.getItem('barangayUsers'));
+        const userExists = users.some(u => u.email === email);
+        
+        if (userExists) {
+            alert(`Password reset instructions sent to ${email}`);
+            showPage('loginPage');
+        } else {
+            alert('No account found with that email');
+        }
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem('currentUser');
+        showPage('loginPage');
+        // Clear the form fields
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    // Check if user is already logged in when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('currentUser')) {
+        showPage('adminDashboard');
+        showDefaultContent();
+        
+        // Initialize requests data if it doesn't exist
+        if (!localStorage.getItem('barangayRequests')) {
+            localStorage.setItem('barangayRequests', JSON.stringify([]));
+        }
+    } else {
+        showPage('splashScreen');
+    }
+});
+    
+    // Function to load and display request
+function loadRequests() {
+    fetch('get_requests.php')
+        .then(response => response.json())
+        .then(requests => {
+            const tableBody = document.getElementById('requestTableBody');
+            tableBody.innerHTML = '';
+            
+            requests.forEach(request => {
+                // Ensure request has an ID, generate one if missing
+                const requestId = request.id || 'REQ_' + Math.random().toString(16).substr(2, 12);
+                const requestDate = request.dateSubmitted ? 
+                    new Date(request.dateSubmitted).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    }) : 'N/A';
+                
+                // Get resident name - check different possible properties
+                const residentName = request.residentInfo?.fullName || 
+                                   request.full_name || 
+                                   (request.residentInfo ? 
+                                    `${request.residentInfo.lastName}, ${request.residentInfo.firstName}` : 
+                                    'N/A');
+                
+                // Get document type
+                const docType = request.type || request.request_type || 'Unknown';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${requestId}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${residentName}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${docType}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${requestDate}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${request.status === 'Approved' ? 'bg-green-100 text-green-800' : 
+                            request.status === 'Declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                        ${request.status || 'Pending'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="approveRequest('${requestId}')" 
+                        class="text-green-600 hover:text-green-900 mr-3 ${request.status === 'Approved' ? 'opacity-50 cursor-not-allowed' : ''}">
+                        Approve
+                        </button>
+                        <button onclick="declineRequest('${requestId}')" 
+                        class="text-red-600 hover:text-red-900 ${request.status === 'Declined' ? 'opacity-50 cursor-not-allowed' : ''}">
+                        Decline
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error loading requests:', error));
+}
+
+function approveRequest(requestId) {
+    console.log('Approving request:', requestId);
+    fetch('update_request.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: requestId,
+            status: 'Approved'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            loadRequests(); // Refresh the list
+            loadHistory(); // Update history if needed
+        } else {
+            alert("Error approving request");
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function declineRequest(requestId) {
+    console.log('Declining request:', requestId);
+    fetch('update_request.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: requestId,
+            status: 'Declined'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            loadRequests(); // Refresh the list
+            loadHistory(); // Update history if needed
+        } else {
+            alert("Error declining request");
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    // Function to add to history
+    function addToHistory(request, type) {
+    let history = JSON.parse(localStorage.getItem('barangayHistory')) || { approved: [], declined: [] };
+    
+    // Add to appropriate history array
+    if (type === 'approved') {
+        history.approved.push(request);
+    } else {
+        history.declined.push(request);
+    }
+    
+    localStorage.setItem('barangayHistory', JSON.stringify(history));
+    }
+
+    // Load requests when admin dashboard is shown
+    function showRequestsContent() {
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById('requestsContent').classList.add('active');
+    
+    // Load requests data
+    loadRequests();
+    
+    // Update the active state in the sidebar
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.getElementById('requestedDocBtn').classList.add('active');
+}
+
+    // Function to load history
+function loadHistory() {
+    fetch('get_requests.php')
+        .then(response => response.json())
+        .then(requests => {
+            const approvedContainer = document.getElementById('approvedResidentsContainer');
+            const declinedContainer = document.getElementById('declinedResidentsContainer');
+            
+            approvedContainer.innerHTML = '';
+            declinedContainer.innerHTML = '';
+            
+            requests.forEach(request => {
+                if (request.type === 'Barangay ID') {
+                    const container = request.status === 'Approved' ? approvedContainer : 
+                                    request.status === 'Declined' ? declinedContainer : null;
+                    
+                    if (container) {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white p-6 rounded-lg shadow-md border border-gray-300';
+                        card.innerHTML = `
+                            <div class="flex justify-center mb-6">
+                                <h2 class="text-xl font-bold text-gray-800 border-b-2 ${request.status === 'Approved' ? 'border-green-500' : 'border-red-500'} pb-2 px-4">${request.type}</h2>
+                            </div>
+
+                            <div class="border border-gray-300 rounded-lg p-4 mb-6">
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Full Name:</b>&nbsp;
+                                    <span>${request.residentInfo.fullName}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Sex:</b>&nbsp;
+                                    <span>${request.residentInfo.sex}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Date of Birth:</b>&nbsp;
+                                    <span>${request.residentInfo.dob}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Nationality:</b>&nbsp;
+                                    <span>${request.residentInfo.nationality}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Date of Residency:</b>&nbsp;
+                                    <span>${request.residentInfo.dateResidency}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Contact Number:</b>&nbsp;
+                                    <span>${request.residentInfo.contactNumber}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Address:</b>&nbsp;
+                                    <span>${request.residentInfo.address}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Emergency Contact Name:</b>&nbsp;
+                                    <span>${request.emergencyInfo.name}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Relationship:</b>&nbsp;
+                                    <span>${request.emergencyInfo.relationship}</span>
+                                </div>
+                                <div class="text-gray-700 mt-2 flex items-center">
+                                    <b>Emergency Contact Number:</b>&nbsp;
+                                    <span>${request.emergencyInfo.contactNumber}</span>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-t border-gray-200 ${request.status === 'Approved' ? 'text-green-500' : 'text-red-500'} flex items-center">
+                                    <i class="fas ${request.status === 'Approved' ? 'fa-check-circle' : 'fa-times-circle'} mr-2"></i>
+                                    <span>${request.status} on ${new Date(request.dateSubmitted).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error loading history:', error));
+}
+
+// Helper function to create history card
+function createHistoryCard(request, type) {
+  const card = document.createElement('div');
+  card.className = 'bg-white p-6 rounded-lg shadow-md border border-gray-300';
+  
+  card.innerHTML = `
+    <div class="flex justify-center mb-6">
+      <h2 class="text-xl font-bold text-gray-800 border-b-2 ${type === 'approved' ? 'border-green-500' : 'border-red-500'} pb-2 px-4">${request.type}</h2>
+    </div>
+    
+    <div class="border border-gray-300 rounded-lg p-4 mb-6">
+      <div class="font-medium text-lg">${request.residentInfo.fullName}</div>
+      <div class="text-gray-700 mt-2 flex items-center">
+        <i class="fas fa-phone-alt mr-2 text-blue-500"></i>
+        <span>${request.residentInfo.contactNumber}</span>
+      </div>
+      <div class="text-gray-700 mt-2 flex items-center">
+        <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+        <span>${request.residentInfo.address}</span>
+      </div>
+      <div class="mt-4 pt-4 border-t border-gray-200 ${type === 'approved' ? 'text-green-500' : 'text-red-500'} flex items-center">
+        <i class="fas ${type === 'approved' ? 'fa-check-circle' : 'fa-times-circle'} mr-2"></i>
+        <span>${type === 'approved' ? 'Approved' : 'Declined'} on ${new Date(request.dateSubmitted).toLocaleDateString()}</span>
+      </div>
+    </div>
+  `;
+  
+  return card;
+}
+
+// Update showHistorySection function
+function showHistorySection(sectionId) {
+  // Hide all content sections
+  document.querySelectorAll('.content-section').forEach(section => {
+    section.classList.add('hidden');
+    section.classList.remove('active');
+  });
+  
+  // Show the selected section
+  const section = document.getElementById(sectionId);
+  section.classList.remove('hidden');
+  section.classList.add('active');
+  
+  // Load history data
+  loadHistory();
+  
+  // Close the dropdown
+  toggleDropdown('historyDropdown');
+  
+  // Update active state in sidebar
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelector('[onclick="toggleDropdown(\'historyDropdown\')"]').classList.add('active');
+}
+</script>
+</body>
+</html>

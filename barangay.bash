@@ -1,0 +1,1 @@
+curl -X GET https://barangayesystem.github.io/api/endpoint
