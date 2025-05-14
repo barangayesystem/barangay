@@ -4340,7 +4340,9 @@ function barangayIDSendRequest() {
 
   fetch('submit_request.php', {
     method: 'POST',
-    body: "name=Juan&request_type=ID",  // ← Simple form data (NOT JSON)
+    body: JSON.stringify({id: 123}),  // ← Simple form data (NOT JSON)
+    headers: {
+        'Content-Type': 'application/json'
 })
 .then(response => response.text())
 .then(data => console.log("Server says:", data));
