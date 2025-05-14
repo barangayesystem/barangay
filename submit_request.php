@@ -10,6 +10,14 @@ try {
         throw new Exception('Invalid data');
     }
 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name']; // If sending form data
+    $id = $_POST['id'];
+    } else {
+    http_response_code(405); // Method Not Allowed
+    echo "Error: Only POST requests are allowed!";
+    }
+    
     // Load existing requests
     $requests = [];
     if (file_exists($storageFile) && filesize($storageFile) > 0) {
